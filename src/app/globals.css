@@ -1756,50 +1756,10 @@ svg {
   background: var(--accent);
 }
 
-.server-card {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--surface-2);
-}
-
-.server-card-head {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-
-.server-card-status {
-  flex: 1;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-dim);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.server-url {
-  font-size: 10px;
-  color: var(--text-faint);
-  overflow-wrap: anywhere;
-  padding: 5px 7px;
-  background: var(--editor-bg);
-  border: 1px solid var(--line-soft);
-  border-radius: 4px;
-}
-
 .setting-note {
   font-size: 11px;
   line-height: 1.5;
   color: var(--text-faint);
-}
-
-.server-card .btn {
-  align-self: flex-start;
 }
 
 .about-list {

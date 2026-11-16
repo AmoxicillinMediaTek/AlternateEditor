@@ -54,13 +54,13 @@ on WebContainer.
   for words already in the file, undo/redo, and search.
 - Per-file editor state: cursor, scroll, folds, and undo history survive switching
   tabs and reloading the page.
-- Dirty markers compare against the last explicit save. Content saves continuously,
-  so the dot means "not checkpointed", not "not stored".
+- Dirty markers compare against the last checkpoint. Content is stored locally
+  as you type; auto save can also checkpoint edits every 2 seconds.
 - Explorer with nested folders, file-type icons, create, rename, delete, and an
   active-file highlight.
 - Workspace search with line previews; picking a hit opens the file at the match.
-- Settings for theme (dark/light), font size, tab size, word wrap, and active-line
-  highlight. Settings persist.
+- Settings for theme (dark/light), font size, tab size, word wrap, active-line
+  highlight, and optional auto save every 2 seconds. Settings persist.
 - xterm.js terminal backed by a StackBlitz WebContainer shell (`sh`, `node`, `npm`).
 - Light theme, dark theme, focus styles, and screen-reader labels throughout.
 

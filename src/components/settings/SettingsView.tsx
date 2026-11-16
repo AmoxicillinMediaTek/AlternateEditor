@@ -1,7 +1,6 @@
 "use client";
 
 import { Icon } from "@/components/ui/Icon";
-import { BACKEND_HTTP_URL } from "@/lib/backend";
 import { useStore, useStoreApi } from "@/lib/workspace/store";
 
 function SwitchRow({
@@ -37,7 +36,6 @@ function SwitchRow({
 export function SettingsView({ onClose }: { onClose: () => void }) {
   const store = useStoreApi();
   const settings = useStore((state) => state.settings);
-  const backend = useStore((state) => state.backend);
 
   return (
     <div className="side-view">
@@ -150,40 +148,14 @@ export function SettingsView({ onClose }: { onClose: () => void }) {
           </fieldset>
 
           <fieldset className="settings-group">
-            <legend>Rust server</legend>
-            <div className="server-card">
-              <div className="server-card-head">
-                <span className={`status-dot status-${backend.status}`} aria-hidden="true" />
-                <span className="server-card-status">
-                  {backend.status === "online"
-                    ? `Online${backend.version ? ` · v${backend.version}` : ""}`
-                    : backend.status === "checking"
-                      ? "Checking"
-                      : "Offline"}
-                </span>
-                <button
-                  type="button"
-                  className="btn btn-quiet btn-small"
-                  onClick={() => void store.checkBackend()}
-                >
-                  <Icon name="refresh" size={13} />
-                  Check
-                </button>
-              </div>
-              <p className="server-url mono">{BACKEND_HTTP_URL}</p>
-              <p className="setting-note">
-                Push copies your files to the local Rust service. The terminal runs separately, in
-                a StackBlitz WebContainer inside this tab.
-              </p>
-              <button
-                type="button"
-                className="btn btn-quiet btn-small"
-                onClick={() => void store.pushToServer()}
-              >
-                <Icon name="arrow-up" size={13} />
-                Push workspace
-              </button>
-            </div>
+            <legend>Files</legend>
+            <SwitchRow
+              id="setting-auto-save"
+              label="Auto save"
+              description="Checkpoint unsaved edits every 2 seconds."
+              checked={settings.autoSave}
+              onChange={(value) => store.updateSettings({ autoSave: value })}
+            />
           </fieldset>
 
           <fieldset className="settings-group">
@@ -200,10 +172,6 @@ export function SettingsView({ onClose }: { onClose: () => void }) {
               <div>
                 <dt>Framework</dt>
                 <dd>Next.js</dd>
-              </div>
-              <div>
-                <dt>Server</dt>
-                <dd>Rust + Axum</dd>
               </div>
             </dl>
           </fieldset>

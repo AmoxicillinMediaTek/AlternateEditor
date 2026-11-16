@@ -23,6 +23,7 @@ export interface Settings {
   tabSize: number;
   wordWrap: boolean;
   highlightActiveLine: boolean;
+  autoSave: boolean;
 }
 
 export interface RevealRequest {
@@ -66,4 +67,5 @@ export const DEFAULT_SETTINGS: Settings = {
   tabSize: 2,
   wordWrap: true,
   highlightActiveLine: true,
+  autoSave: false,
 };

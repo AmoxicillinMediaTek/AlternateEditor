@@ -41,6 +41,8 @@ import {
 
 let revealToken = 0;
 
+const AUTO_SAVE_INTERVAL_MS = 2000;
+
 export interface AppState {
   hydrated: boolean;
   tree: TreeState;
@@ -95,6 +97,7 @@ function sanitizeSettings(raw: Partial<Settings> | undefined): Settings {
     tabSize: [2, 4, 8].includes(Number(merged.tabSize)) ? Number(merged.tabSize) : 2,
     wordWrap: Boolean(merged.wordWrap),
     highlightActiveLine: Boolean(merged.highlightActiveLine),
+    autoSave: Boolean(merged.autoSave),
   };
 }
 
@@ -244,6 +247,15 @@ export class AppStore {
     const dirty = { ...this.state.dirty };
     delete dirty[fileId];
     this.set({ savedContents, dirty });
+  }
+
+  saveDirtyFiles(): number {
+    const dirtyIds = Object.keys(this.state.dirty).filter((id) => this.state.tree.nodes[id]);
+    if (dirtyIds.length === 0) return 0;
+    const savedContents = { ...this.state.savedContents };
+    for (const id of dirtyIds) savedContents[id] = this.state.contents[id] ?? "";
+    this.set({ savedContents, dirty: {} });
+    return dirtyIds.length;
   }
 
   saveActive() {
@@ -432,6 +444,16 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         root.style.colorScheme = next;
       }
     });
+  }, [store]);
+
+  // Auto save checkpoints unsaved buffers every 2 seconds while it is switched on.
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const state = store.getState();
+      if (!state.hydrated || !state.settings.autoSave) return;
+      store.saveDirtyFiles();
+    }, AUTO_SAVE_INTERVAL_MS);
+    return () => clearInterval(interval);
   }, [store]);
 
   useEffect(() => {
