@@ -1,5 +1,4 @@
 mod error;
-mod terminal;
 mod workspace;
 
 use axum::{
@@ -63,7 +62,7 @@ async fn main() -> anyhow::Result<()> {
             "/api/v1/workspaces/{name}/entry",
             delete(workspace::delete_entry_handler),
         )
-        .route("/ws/terminal", get(terminal::handler))
+        .route("/ws/terminal", get(terminal_unavailable))
         .fallback(fallback)
         .layer(cors)
         .layer(TraceLayer::new_for_http())
@@ -83,6 +82,15 @@ async fn main() -> anyhow::Result<()> {
 
 async fn health() -> Json<Value> {
     Json(workspace::health_payload().await)
+}
+
+async fn terminal_unavailable() -> (StatusCode, Json<Value>) {
+    (
+        StatusCode::GONE,
+        Json(serde_json::json!({
+            "error": "The server terminal was replaced by StackBlitz WebContainer in the browser."
+        })),
+    )
 }
 
 async fn fallback() -> (StatusCode, Json<Value>) {

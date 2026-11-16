@@ -39,6 +39,8 @@ const badges: Record<string, { label: string; tone: string }> = {
   bash: { label: "$", tone: "green" },
   zsh: { label: "$", tone: "green" },
   toml: { label: "T", tone: "grey" },
+  lua: { label: "L", tone: "blue" },
+  luau: { label: "LU", tone: "blue" },
   env: { label: "EN", tone: "grey" },
   gitignore: { label: "GI", tone: "grey" },
 };

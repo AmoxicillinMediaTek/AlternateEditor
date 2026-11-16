@@ -43,6 +43,7 @@ const paths = {
   info: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 11v5M12 8h.01",
   "arrow-right": "M5 12h14M13 6l6 6-6 6",
   filter: "M4 5h16l-6 7v6l-4 2v-8z",
+  power: "M12 3v9M7.5 6.3a8 8 0 1 0 9 0",
   "folder-tree":
     "M3 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1zM15 9a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1zM15 17a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1zM9 9h4M4 9v9h4M8 18h6",
 } as const;

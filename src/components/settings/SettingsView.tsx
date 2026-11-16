@@ -172,8 +172,8 @@ export function SettingsView({ onClose }: { onClose: () => void }) {
               </div>
               <p className="server-url mono">{BACKEND_HTTP_URL}</p>
               <p className="setting-note">
-                Push copies your files to the local Rust service. Commands in the terminal stay
-                sandboxed; the server never spawns a shell.
+                Push copies your files to the local Rust service. The terminal runs separately, in
+                a StackBlitz WebContainer inside this tab.
               </p>
               <button
                 type="button"

@@ -30,6 +30,7 @@ export function AppShell() {
   const [explorerOpen, setExplorerOpen] = useState(false);
   const [sidebarView, setSidebarView] = useState<SidebarView>("files");
   const [terminalOpen, setTerminalOpen] = useState(false);
+  const [terminalMounted, setTerminalMounted] = useState(false);
   const [prompt, setPrompt] = useState<PromptState>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
@@ -86,6 +87,7 @@ export function AppShell() {
         setExplorerOpen((value) => !value);
       } else if (key === "j" || event.key === "`") {
         event.preventDefault();
+        setTerminalMounted(true);
         setTerminalOpen((value) => !value);
       } else if (key === "f" && event.shiftKey) {
         event.preventDefault();
@@ -170,7 +172,10 @@ export function AppShell() {
               onOpenExplorer={openFiles}
               onOpenSearch={openSearch}
               onOpenSettings={openSettings}
-              onToggleTerminal={() => setTerminalOpen((value) => !value)}
+              onToggleTerminal={() => {
+                setTerminalMounted(true);
+                setTerminalOpen((value) => !value);
+              }}
               terminalOpen={terminalOpen}
               onCreateRequest={requestCreate}
               onRenameRequest={requestRename}
@@ -182,8 +187,11 @@ export function AppShell() {
                 onOpenExplorer={openFiles}
                 onNewFile={() => requestCreate(store.getState().tree.rootId, "file")}
               />
-              {terminalOpen ? (
-                <TerminalPanel onClose={() => setTerminalOpen(false)} />
+              {terminalMounted ? (
+                <TerminalPanel
+                  hidden={!terminalOpen}
+                  onClose={() => setTerminalOpen(false)}
+                />
               ) : null}
             </div>
           </main>

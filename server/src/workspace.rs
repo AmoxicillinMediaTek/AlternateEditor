@@ -164,38 +164,6 @@ pub fn count_files(path: &StdPath, depth: usize) -> usize {
     total
 }
 
-pub async fn list_directory(
-    state: &AppState,
-    workspace: &str,
-    relative: &str,
-) -> ApiResult<Vec<(String, bool)>> {
-    let root = existing_workspace_dir(state, workspace).await?;
-    let directory = if relative.trim().is_empty() {
-        root
-    } else {
-        resolve_existing(state, workspace, relative).await?.1
-    };
-    if !directory.is_dir() {
-        return Err(ApiError::bad_request("That path is not a folder."));
-    }
-    let mut entries = tokio::fs::read_dir(&directory).await?;
-    let mut items: Vec<(String, bool)> = Vec::new();
-    while let Some(entry) = entries.next_entry().await? {
-        let file_type = entry.file_type().await?;
-        let name = entry.file_name().to_string_lossy().into_owned();
-        if file_type.is_dir() {
-            items.push((format!("{name}/"), true));
-        } else if file_type.is_file() {
-            items.push((name, false));
-        }
-        if items.len() > 500 {
-            break;
-        }
-    }
-    items.sort_by(|a, b| b.1.cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
-    Ok(items)
-}
-
 pub async fn read_workspace_file(
     state: &AppState,
     workspace: &str,

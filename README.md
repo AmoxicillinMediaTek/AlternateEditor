@@ -1,8 +1,8 @@
 # AlternateEditorDemo
 
 A mobile-first code editor for the browser. CodeMirror 6 handles editing, Next.js
-serves the shell, and an optional Rust service keeps a copy of your workspace on
-disk and answers terminal commands in a read-only sandbox.
+serves the shell, xterm.js plus StackBlitz WebContainer run a real Node shell, and
+an optional Rust service keeps a copy of your workspace on disk.
 
 Open it on a phone and it behaves like an app: drawer for files, icon rail for
 search and settings, thumb-sized controls. Open it on a desktop and it fills the
@@ -43,8 +43,8 @@ npm run server
 | `NEXT_PUBLIC_RUST_URL` | `http://127.0.0.1:8080` | Where the frontend looks for the server |
 
 With the server running, the explorer footer shows `Server online` and offers
-**Push workspace**. Terminal commands then travel over a WebSocket to the server
-instead of running in the browser.
+**Push workspace**. The terminal does not use the server: it runs in the browser
+on WebContainer.
 
 ## What is in the editor
 
@@ -61,7 +61,7 @@ instead of running in the browser.
 - Workspace search with line previews; picking a hit opens the file at the match.
 - Settings for theme (dark/light), font size, tab size, word wrap, and active-line
   highlight. Settings persist.
-- Terminal panel with local commands and a remote sandbox mode.
+- xterm.js terminal backed by a StackBlitz WebContainer shell (`sh`, `node`, `npm`).
 - Light theme, dark theme, focus styles, and screen-reader labels throughout.
 
 ## Keyboard shortcuts
@@ -81,13 +81,28 @@ without leaving the sidebar. The terminal is only reachable from the top-bar
 `⋯` menu (or `Ctrl/Cmd + J`). The editor adds a quick-key row for Tab, undo,
 redo, and find while the on-screen keyboard is up.
 
-## Terminal commands
+## Terminal
 
-Browser shell: `ls`, `cat`, `open`, `pwd`, `theme`, `echo`, `whoami`, `clear`, `help`.
+The panel is xterm.js driving a `jsh` shell inside a StackBlitz WebContainer, so
+`node`, `npm`, `npx`, `tsc` and friends really run in the tab. Files in the
+explorer are mirrored into the container at boot, shortly after any edit, before
+every `Enter`, and whenever you press the sync button, so `python file.py` or
+`node file.js` sees what you just typed. Touch screens scroll the terminal
+buffer with a vertical drag instead of the page. Closing the terminal keeps the
+panel mounted, so the buffer, scrollback and shell survive until you reopen it.
 
-Rust sandbox: `ls`, `cat`, `pwd`, `echo`, `whoami`, `help`. It never spawns a
-process, never writes files, and caps each session at 120 commands and each file
-read at 64 KB. Push the workspace first so there is something to read.
+`lua file.lua`, `luau file.lua`, `lua -e "print(1 + 1)"` and `lua -v` run on a
+bundled Lua 5.3 VM ([fengari](https://fengari.io/)) inside the tab, no install
+needed. Lua and Luau files get their own explorer badge and syntax highlighting.
+
+WebContainer needs cross-origin isolation. `next.config.ts` sends
+`Cross-Origin-Opener-Policy: same-origin` and
+`Cross-Origin-Embedder-Policy: require-corp` on every route; the runtime boots
+with `coep: "require-corp"`. Without those headers the panel reports that the
+container is offline and the rest of the editor keeps working.
+
+No npm install is required for the shell itself, but anything you `npm i` is
+ephemeral: the container filesystem lives in memory for the life of the tab.
 
 ## Architecture
 
@@ -100,16 +115,15 @@ src/
     search/                Workspace search sidebar view
     settings/              Settings sidebar view
     shell/                 Layout, top bar, sidebar rail, shortcuts
-    terminal/              Terminal UI and browser-shell commands
+    terminal/              xterm.js panel on WebContainer
     ui/                    Dialog, menu, prompt, confirm, toasts, icons
   lib/
-    backend.ts             Rust HTTP/WebSocket client
+    backend.ts             Rust HTTP client
     workspace/             Store, tree operations, search, persistence, empty seed
-    terminal/local-shell.ts
+    terminal/container.ts  WebContainer boot and workspace mirroring
 server/src/
   main.rs                  Axum router and state
   workspace.rs             Path validation, sync, file operations, tree
-  terminal.rs              Read-only WebSocket sandbox
 ```
 
 The store is a small external store read through `useSyncExternalStore`. File
@@ -131,7 +145,6 @@ tab changes.
 | `POST` | `/api/v1/workspaces/{name}/dir` | Create `{ path }` |
 | `POST` | `/api/v1/workspaces/{name}/rename` | `{ from, to }` |
 | `DELETE` | `/api/v1/workspaces/{name}/entry?path=...` | Delete a file or folder |
-| `WS` | `/ws/terminal?workspace=...` | `{ type: "command", command }` in, `{ type, data }` out |
 
 Every path is normalised and checked against the workspace root, so `..` and
 absolute paths are rejected before touching disk. File writes are capped at 4 MB.
@@ -140,8 +153,8 @@ absolute paths are rejected before touching disk. File writes are capped at 4 MB
 
 - One local workspace. The Rust service can hold many, but the UI manages one at
   a time and pushes it under a slug of the workspace name.
-- The terminal is a command sandbox, not a shell. No compilers, package managers,
-  or long-running processes.
+- The terminal lives in the tab. Closing it or reloading the page resets the
+  container filesystem; your workspace in the editor is unaffected.
 - No minimap, no Git integration, no extensions.
 - Persistence is per browser profile. Clearing site data clears the workspace.
 

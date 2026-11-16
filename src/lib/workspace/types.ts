@@ -33,19 +33,6 @@ export interface RevealRequest {
   token: number;
 }
 
-export type TerminalLineKind = "input" | "output" | "error" | "system";
-
-export interface TerminalLine {
-  id: string;
-  kind: TerminalLineKind;
-  text: string;
-}
-
-export interface TerminalState {
-  lines: TerminalLine[];
-  history: string[];
-}
-
 export type BackendStatus = "unknown" | "checking" | "online" | "offline";
 
 export interface BackendState {

@@ -4,8 +4,6 @@ export const BACKEND_HTTP_URL = (
   process.env.NEXT_PUBLIC_RUST_URL ?? DEFAULT_HTTP
 ).replace(/\/$/, "");
 
-export const BACKEND_WS_URL = BACKEND_HTTP_URL.replace(/^http/, "ws");
-
 export interface Health {
   status: string;
   service: string;
@@ -61,10 +59,6 @@ export async function pushWorkspace(name: string, files: PushFile[]): Promise<Pu
     method: "POST",
     body: JSON.stringify({ name, files }),
   }, 15000);
-}
-
-export function terminalSocketUrl(workspace: string): string {
-  return `${BACKEND_WS_URL}/ws/terminal?workspace=${encodeURIComponent(slugifyWorkspace(workspace))}`;
 }
 
 export function describeBackendError(error: unknown): string {

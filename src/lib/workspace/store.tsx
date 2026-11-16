@@ -27,7 +27,6 @@ import {
   type PersistedWorkspace,
   type RevealRequest,
   type Settings,
-  type TerminalLine,
   type Toast,
   type ToastTone,
   type TreeState,
@@ -53,7 +52,6 @@ export interface AppState {
   settings: Settings;
   toasts: Toast[];
   reveal: RevealRequest | null;
-  terminal: { lines: TerminalLine[]; history: string[] };
   backend: BackendState;
 }
 
@@ -71,7 +69,6 @@ function initialState(): AppState {
     settings: DEFAULT_SETTINGS,
     toasts: [],
     reveal: null,
-    terminal: { lines: [], history: [] },
     backend: { status: "unknown", version: null, checkedAt: null },
   };
 }
@@ -361,27 +358,6 @@ export class AppStore {
 
   updateSettings(patch: Partial<Settings>) {
     this.set({ settings: sanitizeSettings({ ...this.state.settings, ...patch }) });
-  }
-
-  addTerminalLines(lines: Omit<TerminalLine, "id">[]) {
-    if (lines.length === 0) return;
-    const next = lines.map((line) => ({ ...line, id: createId("line") }));
-    this.set({
-      terminal: {
-        ...this.state.terminal,
-        lines: [...this.state.terminal.lines, ...next].slice(-400),
-      },
-    });
-  }
-
-  clearTerminal() {
-    this.set({ terminal: { ...this.state.terminal, lines: [] } });
-  }
-
-  pushTerminalHistory(command: string) {
-    if (!command.trim()) return;
-    const history = [...this.state.terminal.history.filter((item) => item !== command), command].slice(-40);
-    this.set({ terminal: { ...this.state.terminal, history } });
   }
 
   async checkBackend(): Promise<boolean> {

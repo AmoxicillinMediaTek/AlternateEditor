@@ -8,7 +8,7 @@ import { AppShell } from "@/components/shell/AppShell";
 export const metadata: Metadata = {
   title: "AlternateEditorDemo — mobile code editor",
   description:
-    "A mobile-first workspace with a CodeMirror editor, file tree, tabs, workspace search and a sandboxed terminal.",
+    "A mobile-first workspace with a CodeMirror editor, file tree, tabs, workspace search and an in-browser Node terminal.",
   applicationName: "AlternateEditorDemo",
 };
 

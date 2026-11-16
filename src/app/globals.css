@@ -1832,8 +1832,12 @@ svg {
   min-height: 0;
   background: var(--surface);
   border-top: 1px solid var(--line);
-  flex: 0 0 236px;
-  height: 236px;
+  flex: 0 0 280px;
+  height: 280px;
+}
+
+.terminal-panel.is-hidden {
+  display: none;
 }
 
 .terminal-head {
@@ -1883,21 +1887,29 @@ svg {
   margin-left: 2px;
 }
 
-.terminal-mode.mode-remote {
+.terminal-mode.mode-ready {
   color: var(--ok);
   border-color: rgba(127, 200, 169, 0.3);
 }
 
-.terminal-mode.mode-remote .status-dot {
+.terminal-mode.mode-ready .status-dot {
   background: var(--ok);
 }
 
-.terminal-mode.mode-connecting {
+.terminal-mode.mode-booting {
   color: var(--accent);
 }
 
-.terminal-mode.mode-connecting .status-dot {
+.terminal-mode.mode-booting .status-dot {
   background: var(--accent);
+}
+
+.terminal-mode.mode-error {
+  color: var(--danger);
+}
+
+.terminal-mode.mode-error .status-dot {
+  background: var(--danger);
 }
 
 .terminal-actions {
@@ -1912,79 +1924,22 @@ svg {
   height: 26px;
 }
 
-.terminal-log {
+.terminal-host {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding: 8px 12px 10px;
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  line-height: 1.6;
   background: var(--editor-bg);
+  padding: 6px 10px 8px;
+  touch-action: none;
+  overscroll-behavior: contain;
+}
+
+.terminal-host .xterm {
+  height: 100%;
+}
+
+.terminal-host .xterm-viewport {
   scrollbar-width: thin;
   scrollbar-color: var(--line-strong) transparent;
-}
-
-.term-line {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
-.term-input {
-  color: var(--text);
-}
-
-.term-output {
-  color: var(--text-dim);
-}
-
-.term-system {
-  color: var(--text-faint);
-  font-style: italic;
-}
-
-.term-error {
-  color: var(--danger);
-}
-
-.terminal-blank {
-  color: var(--text-faint);
-  font-style: italic;
-}
-
-.terminal-form {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  height: 40px;
-  flex-shrink: 0;
-  padding: 0 12px;
-  border-top: 1px solid var(--line);
-  background: var(--surface);
-}
-
-.term-prompt {
-  color: var(--accent);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  flex-shrink: 0;
-}
-
-.terminal-input {
-  flex: 1;
-  min-width: 0;
-  height: 100%;
-  border: 0;
-  background: transparent;
-  outline: none;
-  color: var(--text);
-  font-family: var(--font-mono);
-  font-size: 12px;
-}
-
-.terminal-input::placeholder {
-  color: var(--text-faint);
 }
 
 .boot-screen {
@@ -2181,9 +2136,8 @@ svg {
     height: 30px;
   }
 
-  .terminal-form {
-    height: 44px;
-    padding-bottom: env(safe-area-inset-bottom);
+  .terminal-host {
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
   }
 
   .settings-body {
@@ -2280,8 +2234,8 @@ svg {
   }
 
   .terminal-panel {
-    flex: 0 0 236px;
-    height: 236px;
+    flex: 0 0 280px;
+    height: 280px;
   }
 
   .terminal-mode {

@@ -46,6 +46,8 @@ const labels: Record<string, string> = {
   bash: "Shell",
   zsh: "Shell",
   toml: "TOML",
+  lua: "Lua",
+  luau: "Luau",
   env: "Environment",
   txt: "Plain text",
 };
@@ -111,6 +113,14 @@ const loaders: Record<string, () => Promise<Extension>> = {
   svg: () => import("@codemirror/lang-xml").then((m) => m.xml()),
   yml: () => import("@codemirror/lang-yaml").then((m) => m.yaml()),
   yaml: () => import("@codemirror/lang-yaml").then((m) => m.yaml()),
+  lua: () =>
+    Promise.all([import("@codemirror/language"), import("@codemirror/legacy-modes/mode/lua")]).then(
+      ([state, mode]) => state.StreamLanguage.define(mode.lua),
+    ),
+  luau: () =>
+    Promise.all([import("@codemirror/language"), import("@codemirror/legacy-modes/mode/lua")]).then(
+      ([state, mode]) => state.StreamLanguage.define(mode.lua),
+    ),
 };
 
 const cache = new Map<string, Promise<EditorLanguage>>();
